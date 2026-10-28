@@ -1,0 +1,56 @@
+# Sistema empresarial de inventario para panadería
+
+Aplicación web responsive con React, TypeScript, Vite y Supabase. Interfaz administrativa de estilo empresarial con tablas tipo hoja de cálculo/documento, búsqueda, formularios, exportación a Excel, recetas descargables en Word, etiquetas imprimibles y control de roles.
+
+## Funciones incluidas
+
+- Productos: nombre, costo, existencia, SKU, código de barras, fecha de ingreso, unidad, mínimo, categoría, proveedor y notas.
+- Módulos de inventario independientes para organizar distintas áreas.
+- Entradas, salidas y ajustes de inventario con actualización automática del stock por trigger SQL.
+- Recetas con ingredientes por línea y exportación individual a Word, además de exportación de listados a Excel.
+- Productos finales y etiquetas con nombre, fecha y línea física «Elaborado por: __________».
+- Proveedores con contacto, empresa, teléfono, correo, dirección, productos y notas.
+- Trabajadores con departamento, puesto, teléfono, correo, fecha de ingreso y estado.
+- Horario semanal de lunes a domingo con ON/OFF y detalle de entrada, salida y descanso.
+- Usuarios y permisos: `superadmin` gestiona los módulos; `employee` solo consulta e imprime etiquetas de productos finales.
+- Políticas RLS de Supabase para aplicar permisos también en la base de datos, no solo en la interfaz.
+
+## Instalación local
+
+1. Instala Node.js 20 o posterior.
+2. Descomprime el proyecto y abre esta carpeta en Visual Studio Code.
+3. Ejecuta `npm install`.
+4. Copia `.env.example` a `.env`.
+5. En Supabase → Project Settings → API, coloca el Project URL y la clave publicable/anon en las variables `VITE_SUPABASE_URL` y `VITE_SUPABASE_ANON_KEY`.
+6. En Supabase → SQL Editor, ejecuta el contenido de `supabase/schema.sql`. Es una migración aditiva para agregar columnas que falten; aun así, revisa primero si tu base tiene personalizaciones propias.
+7. Ejecuta `npm run dev`.
+
+## Crear y activar el superadministrador inicial
+
+La app no contiene una cuenta precreada ni guarda una contraseña dentro del código. Para crear la cuenta de forma segura:
+
+1. En Supabase, abre **Authentication → Sign In / Providers → Email** y permite el registro por correo (Email provider / Allow new users). Si la confirmación por correo está activa, tendrás que confirmar el correo recibido.
+2. Abre la app. El campo de correo viene preparado con `superadmin00@gmail.com`.
+3. Escribe la contraseña que quieras usar y pulsa **Crear cuenta / activar administrador** una sola vez.
+4. Si el proyecto requiere confirmar el correo, abre el correo de confirmación y después vuelve a iniciar sesión.
+5. El `supabase/schema.sql` actualizado asigna el rol `superadmin` a esa dirección cuando la cuenta está creada y el correo está confirmado. Las demás cuentas nuevas quedan como `employee`.
+6. Si esa cuenta ya existía antes de ejecutar el schema, vuelve a ejecutar `supabase/schema.sql` o ejecuta `supabase/bootstrap_superadmin.sql` en SQL Editor. El archivo de bootstrap también muestra el resultado para comprobar el rol.
+
+**Importante:** SQL por sí solo no crea de forma soportada una cuenta de Authentication. No insertes manualmente en `auth.users` ni pongas una clave `service_role` en el frontend. Como la contraseña se compartió en el chat, considera cambiarla por una contraseña nueva y única antes de usar la app con datos reales.
+
+## Compilación
+
+```bash
+npm run build
+```
+
+Antes de usarlo en una panadería en producción, prueba los flujos con datos de prueba y confirma las políticas RLS y los movimientos de stock en tu propio proyecto Supabase.
+
+## Corrección de productos y hoja de entradas/salidas
+
+- En Productos e inventario, eliminar intenta borrar el producto si no tiene referencias. Si los movimientos históricos impiden borrarlo, lo desactiva para conservar la auditoría y retirarlo del inventario activo.
+- Editar sigue guardando los campos del producto en `public.products`.
+- Entradas y salidas presenta una hoja editable con todos los productos activos, filtro por módulo, existencia, entradas, salidas y existencia calculada. Permite guardar los movimientos en Supabase e imprimir la hoja en horizontal con bordes naranjas en las columnas de entrada y salida.
+- Antes de probar movimientos en la base real, revisa y ejecuta `supabase/fix_inventory_movement_stock_trigger.sql` en Supabase SQL Editor. Reemplaza el trigger conocido para aceptar los valores actuales (`manual_in`, `manual_out`, `count_adjustment`, etc.). No ejecutes `schema.sql` completo ni borres migraciones.
+
+Nota de verificación: se comprobó la sintaxis TSX del archivo principal. La instalación de dependencias expiró en este entorno, así que la compilación completa y las pruebas contra el Supabase real todavía deben realizarse en el proyecto del usuario.
