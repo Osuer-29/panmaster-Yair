@@ -10,10 +10,7 @@
     "build:desktop": "tsc --noEmit && vite build --mode desktop",
     "build:win": "npm run build:desktop && electron-builder --win nsis",
     "start:desktop": "npm run build:desktop && electron .",
-<<<<<<< HEAD
 
-=======
->>>>>>> cb811b9add1323c52fbe743c4b346b08e7c7b466
     "preview": "vite preview --host 0.0.0.0"
   },
   "dependencies": {
@@ -41,7 +38,6 @@
   "build": {
     "appId": "com.panmaster.inventory",
     "productName": "PanMaster",
-<<<<<<< HEAD
     "directories": {
       "output": "release"
     },
@@ -57,11 +53,5 @@
       "oneClick": false,
       "allowToChangeInstallationDirectory": true
     }
-=======
-    "directories": { "output": "release" },
-    "files": ["dist/**/*", "electron/**/*", "package.json"],
-    "win": { "target": "nsis" },
-    "nsis": { "oneClick": false, "allowToChangeInstallationDirectory": true }
->>>>>>> cb811b9add1323c52fbe743c4b346b08e7c7b466
   }
 }
