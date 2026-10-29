@@ -154,7 +154,23 @@ export default function App(){
    await loadRows();
   }catch(e:any){setNotice({type:'error',text:'No se pudo eliminar: '+(e.message||'Error desconocido')})}finally{setBusy(false)}
  }
- function setMovementDraft(productId:string,key:'entry'|'exit',value:string){if(pendingBatch.current){setNotice({type:'error',text:'Confirma primero el lote pendiente con Guardar entradas/salidas.'});return}setMovementDrafts(prev=>({...prev,[productId]:{entry:prev[productId]?.entry||'',exit:prev[productId]?.exit||'', [key]:value}}))}
+ async function clearInventoryProducts(){
+   if(!isAdmin){setNotice({type:'error',text:'Solo el superadministrador puede vaciar el inventario.'});return}
+   const moduleName=movementModuleFilter==='all'?'TODOS los inventarios':lookupModules.find((m:any)=>m.id===movementModuleFilter)?.name||'el inventario seleccionado';
+   if(!confirm(`ATENCIÓN: se eliminarán permanentemente todos los productos de ${moduleName} y sus movimientos de entrada/salida. Esta acción no se puede deshacer. ¿Deseas continuar?`))return;
+   if(!confirm('Confirmación final: ¿estás seguro de borrar estos productos y su historial relacionado?'))return;
+   setBusy(true);setNotice(null);
+   try{
+    const {error}=await supabase.rpc('clear_inventory_products',{p_module_id:movementModuleFilter==='all'?null:movementModuleFilter});
+    if(error)throw error;
+    const {data:prods,error:prodsError}=await supabase.from('products').select('*').eq('active',true).order('name');
+    if(prodsError)throw prodsError;
+    setLookupProducts(prods||[]);setMovementDrafts({});
+    await loadRows();
+    setNotice({type:'ok',text:`Inventario vaciado: productos de ${moduleName} y sus movimientos asociados eliminados.`});
+   }catch(e:any){setNotice({type:'error',text:'No se pudo vaciar el inventario: '+(e.message||'Error desconocido')})}finally{setBusy(false)}
+  }
+  function setMovementDraft(productId:string,key:'entry'|'exit',value:string){if(pendingBatch.current){setNotice({type:'error',text:'Confirma primero el lote pendiente con Guardar entradas/salidas.'});return}setMovementDrafts(prev=>({...prev,[productId]:{entry:prev[productId]?.entry||'',exit:prev[productId]?.exit||'', [key]:value}}))}
  const movementProducts=lookupProducts.filter((p:any)=>(p.active!==false)&&(p.is_active!==false)&&(movementModuleFilter==='all'||p.module_id===movementModuleFilter)).sort((a:any,b:any)=>String(a.name_es||a.name||'').localeCompare(String(b.name_es||b.name||''),'es'));
  async function saveMovementSheet(){
   if(savingRef.current)return;
