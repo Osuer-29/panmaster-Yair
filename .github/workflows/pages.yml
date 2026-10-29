@@ -36,9 +36,22 @@ jobs:
           if [ -z "$VITE_SUPABASE_URL" ]; then unset VITE_SUPABASE_URL; fi
           if [ -z "$VITE_SUPABASE_ANON_KEY" ]; then unset VITE_SUPABASE_ANON_KEY; fi
           npm run build
+      - name: Preparar carpeta web de publicación
+        run: |
+          test -f publicacion/index.html
+          test -f publicacion/panmaster.js
+          test -f publicacion/panmaster.css
+          rm -rf site
+          mkdir -p site
+          cp publicacion/index.html site/index.html
+          cp publicacion/panmaster.js site/panmaster.js
+          cp publicacion/panmaster.css site/panmaster.css
+          touch site/.nojekyll
+          echo "Contenido listo para publicar:"
+          ls -lah site
       - uses: actions/upload-pages-artifact@v3
         with:
-          path: publicacion
+          path: site
   deploy:
     needs: build
     runs-on: ubuntu-latest
