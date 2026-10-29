@@ -204,6 +204,7 @@ BEGIN
   UPDATE public.inventory_movements SET cancelled_at = now(), cancelled_by = v_actor WHERE id = v_old.id;
 END $$;
 
+<<<<<<< HEAD
 CREATE OR REPLACE FUNCTION public.delete_product_with_movements(p_product_id uuid)
 RETURNS void
 LANGUAGE plpgsql
@@ -283,6 +284,8 @@ GRANT EXECUTE ON FUNCTION public.delete_product_with_movements(uuid) TO authenti
 GRANT EXECUTE ON FUNCTION public.clear_inventory_products(uuid) TO authenticated;
 
 
+=======
+>>>>>>> cb811b9add1323c52fbe743c4b346b08e7c7b466
 REVOKE ALL ON FUNCTION public.panmaster_require_admin() FROM PUBLIC;
 REVOKE ALL ON FUNCTION public.save_panmaster_recipe(uuid,text,text,text,boolean) FROM PUBLIC;
 REVOKE ALL ON FUNCTION public.record_panmaster_inventory_batch(uuid,jsonb) FROM PUBLIC;

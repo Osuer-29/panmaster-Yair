@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 -- PanMaster: employee-created printable labels.
+=======
+-- PanMaster: shared printable labels created by active employees or the superadministrator.
+>>>>>>> cb811b9add1323c52fbe743c4b346b08e7c7b466
 -- Run this entire file in Supabase Dashboard > SQL Editor > New query.
 -- Additive migration; does not delete or rewrite existing application data.
 
@@ -19,10 +23,18 @@ drop policy if exists "Employees and admins can view custom labels" on public.em
 create policy "Employees and admins can view custom labels"
   on public.employee_custom_labels for select to authenticated
   using (
+<<<<<<< HEAD
     user_id = auth.uid()
     or exists (
       select 1 from public.profiles p
       where p.id = auth.uid() and p.active = true and p.role::text = 'superadmin'
+=======
+    exists (
+      select 1 from public.profiles p
+      where p.id = auth.uid()
+        and p.active = true
+        and p.role::text in ('superadmin', 'employee')
+>>>>>>> cb811b9add1323c52fbe743c4b346b08e7c7b466
     )
   );
 

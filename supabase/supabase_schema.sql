@@ -125,7 +125,11 @@ alter table public.recipes add column if not exists updated_at timestamptz not n
 create table if not exists public.employees (
   id uuid primary key default gen_random_uuid(), user_id uuid unique references auth.users(id) on delete set null,
   full_name text not null default '', department text, job_title text, phone text, email text, hire_date date,
+<<<<<<< HEAD
   active boolean not null default true, notes text, display_order integer not null default 1000,
+=======
+  active boolean not null default true, notes text,
+>>>>>>> cb811b9add1323c52fbe743c4b346b08e7c7b466
   created_at timestamptz not null default now(), updated_at timestamptz not null default now()
 );
 alter table public.employees add column if not exists user_id uuid;
@@ -137,7 +141,10 @@ alter table public.employees add column if not exists email text;
 alter table public.employees add column if not exists hire_date date;
 alter table public.employees add column if not exists active boolean not null default true;
 alter table public.employees add column if not exists notes text;
+<<<<<<< HEAD
 alter table public.employees add column if not exists display_order integer not null default 1000;
+=======
+>>>>>>> cb811b9add1323c52fbe743c4b346b08e7c7b466
 alter table public.employees add column if not exists created_at timestamptz not null default now();
 alter table public.employees add column if not exists updated_at timestamptz not null default now();
 
