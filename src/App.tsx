@@ -282,13 +282,14 @@ export default function App(){
   const dateLabelSize=Math.max(6,Math.min(12,9*scale));
   const dateSize=Math.max(7,Math.min(20,14*scale));
   const padding=Math.max(1,Math.min(5,height*.06));
-    w.onload=()=>setTimeout(()=>w.print(),250);
   const html='<!doctype html><html lang="en-US"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>'+escapeHtml(title)+'</title><style>'+
   '@page{size:'+width+'mm '+height+'mm;margin:0}*{box-sizing:border-box}html,body{width:'+width+'mm;height:'+height+'mm;margin:0;padding:0;font-family:Arial,Helvetica,sans-serif;color:#000;background:#fff;overflow:hidden}'+
   '.label{width:'+width+'mm;height:'+height+'mm;padding:'+padding+'mm;display:flex;flex-direction:column;align-items:center;text-align:center;overflow:hidden;break-after:avoid;page-break-after:avoid}'+
   '.heading{font-size:'+headingSize+'pt;font-weight:700;margin:0;flex:0 0 auto}.name{font-size:'+nameSize+'pt;line-height:1.05;font-weight:800;overflow-wrap:anywhere;word-break:break-word;flex:1 1 auto;min-height:0;width:100%;max-width:100%;display:flex;align-items:center;justify-content:center;overflow:hidden}'+
-  '.date-label{font-size:'+dateLabelSize+'pt;font-weight:700;margin:0;flex:0 0 auto}.date{font-size:'+dateSize+'pt;margin:1mm 0 0;flex:0 0 auto}@media print{html,body,.label{width:'+width+'mm;height:'+height+'mm;margin:0;page-break-after:avoid;break-after:avoid}}@media screen{body{outline:1px solid #bbb}}</style></head><body><main class="label"><div class="heading">'+escapeHtml(heading)+'</div><div class="name">'+escapeHtml(name)+'</div><div class="date-label">DATE</div><div class="date">'+escapeHtml(date)+'</div></main></body></html>';
+  '.date-label{font-size:'+dateLabelSize+'pt;font-weight:700;margin:0;flex:0 0 auto}.date{font-size:'+dateSize+'pt;margin:1mm 0 0;flex:0 0 auto}.print-action{position:fixed;top:8px;right:8px;padding:9px 14px;border:0;border-radius:6px;background:#1f2937;color:#fff;font:600 13px Arial,sans-serif;cursor:pointer;z-index:10}@media print{.print-action{display:none}html,body,.label{width:'+width+'mm;height:'+height+'mm;margin:0;page-break-after:avoid;break-after:avoid}}@media screen{body{outline:1px solid #bbb}}</style></head><body><button class="print-action" onclick="window.print()">Imprimir etiqueta</button><main class="label"><div class="heading">'+escapeHtml(heading)+'</div><div class="name">'+escapeHtml(name)+'</div><div class="date-label">DATE</div><div class="date">'+escapeHtml(date)+'</div></main></body></html>';
   w.document.open();w.document.write(html);w.document.close();
+  w.focus();
+  setTimeout(()=>{try{w.focus();w.print()}catch(error){setNotice({type:'error',text:'No se pudo abrir el cuadro de impresión. Pulsa “Imprimir etiqueta” en la ventana de la etiqueta.'})}},500);
  }
  function printLabel(row:any){
   const productName=String(row?.name_en||row?.name||row?.name_es||'').trim();
